@@ -34,28 +34,15 @@ export class UsersService {
   }
 
   async create(createUserDto: CreateUserDto) {
-    // Validar formato de CPF
-    if (!this.isValidCpfFormat(createUserDto.cpf)) {
-      throw new BadRequestException('CPF deve estar no formato 000.000.000-00');
-    }
 
-    // Verificar se CPF já existe
     const existingUserByCpf = await this.findByCpf(createUserDto.cpf);
     if (existingUserByCpf) {
       throw new ConflictException(`Usuário com CPF ${createUserDto.cpf} já existe`);
     }
 
-    // Verificar se email já existe
     const existingUserByEmail = await this.findByEmail(createUserDto.email);
     if (existingUserByEmail) {
       throw new ConflictException(`Usuário com email ${createUserDto.email} já existe`);
-    }
-
-    // Validar complexidade da senha
-    if (!this.isValidPassword(createUserDto.password)) {
-      throw new BadRequestException(
-        'Senha deve conter pelo menos 8 caracteres, incluindo letra maiúscula, minúscula, número e caractere especial',
-      );
     }
 
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
@@ -69,42 +56,22 @@ export class UsersService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
-    await this.findOne(id);
-    
     if (updateUserDto.password) {
       updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
     }
     
-    await this.usersRepository.update(id, updateUserDto);
+    const result = await this.usersRepository.update(id, updateUserDto);
+
+    if (result.affected === 0) {
+      throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
+    }
     
-    return this.findOne(id);
+    return this.usersRepository.findOneBy({ id });
   }
 
   async remove(id: string) {
     const user = await this.findOne(id);
     await this.usersRepository.remove(user);
-  }
-
-  // Métodos de validação
-  private isValidCpfFormat(cpf: string): boolean {
-    return /^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(cpf);
-  }
-
-  private isValidPassword(password: string): boolean {
-    if (password.length < 8) return false;
-    
-    // Verificar se contém letra maiúscula
-    if (!/[A-Z]/.test(password)) return false;
-    
-    // Verificar se contém letra minúscula
-    if (!/[a-z]/.test(password)) return false;
-    
-    // Verificar se contém número
-    if (!/\d/.test(password)) return false;
-    
-    // Verificar se contém caractere especial
-    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) return false;
-    
-    return true;
+    return { id: user.id, message: 'Usuário removido com sucesso' };
   }
 }

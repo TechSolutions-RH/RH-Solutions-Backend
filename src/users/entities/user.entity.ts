@@ -18,10 +18,10 @@ export class User {
   email: string;
 
   @Column({ unique: true })
-  cpf: string;  // Adicionar campo de CPF
+  cpf: string;  
 
   @Column({ nullable: true })
-  phone: string;  // Adicionar campo de telefone
+  phone: string; 
 
   @Column({ select: false })
   password: string;
