@@ -2,7 +2,8 @@ import { Injectable, ConflictException, NotFoundException } from '@nestjs/common
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { randomBytes } from 'crypto';
-import { Invite, InviteStatus } from './entities/invite.entity';
+import { Invite } from './entities/invite.entity';
+import { InviteStatus } from './enum/invite-status.enum';
 import { CreateInviteDto } from './dto/create-invite.dto';
 import { UpdateInviteDto } from './dto/update-invite.dto';
 import { UsersService } from '../users/users.service';
@@ -15,7 +16,7 @@ export class InvitesService {
     private usersService: UsersService,
   ) {}
 
-  async create(createInviteDto: CreateInviteDto, userId: string) {
+  async create(createInviteDto: CreateInviteDto, userId: number) {
     // Verificar se já existe convite para este email
     const existingInvite = await this.invitesRepository.findOne({
       where: { email: createInviteDto.email },
@@ -58,7 +59,7 @@ export class InvitesService {
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: number) {
     return this.invitesRepository.findOne({
       where: { id },
       relations: ['invitedBy'],
@@ -71,26 +72,26 @@ export class InvitesService {
     });
   }
 
-  async update(id: string, updateInviteDto: UpdateInviteDto) {
+  async update(id: number, updateInviteDto: UpdateInviteDto) {
     await this.invitesRepository.update(id, updateInviteDto);
     return this.findOne(id);
   }
 
-  async markAsCompleted(id: string) {
+  async markAsCompleted(id: number) {
     await this.invitesRepository.update(id, { 
       status: InviteStatus.COMPLETED 
     });
     return this.findOne(id);
   }
 
-  async markAsExpired(id: string) {
+  async markAsExpired(id: number) {
     await this.invitesRepository.update(id, { 
       status: InviteStatus.EXPIRED 
     });
     return this.findOne(id);
   }
 
-  async remove(id: string) {
+  async remove(id: number) {
     const invite = await this.findOne(id);
     if (!invite) {
       throw new NotFoundException(`Convite com ID ${id} não encontrado`);

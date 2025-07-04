@@ -1,16 +1,12 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
+import { InviteStatus } from '../enum/invite-status.enum';
 
-export enum InviteStatus {
-  PENDING = 'pending',    // Em aberto
-  COMPLETED = 'completed', // Finalizado
-  EXPIRED = 'expired',     // Vencido
-}
 
 @Entity()
 export class Invite {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn('identity')
+  id: number;
 
   @Column({ unique: true })
   email: string;
@@ -35,3 +31,5 @@ export class Invite {
   @CreateDateColumn()
   createdAt: Date;
 }
+
+export { InviteStatus };
