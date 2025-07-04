@@ -5,8 +5,8 @@ import { UpdateInviteDto } from './dto/update-invite.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { UserRole } from '../users/entities/user.entity';
-
+import { UserRole } from '../users/enum/user-role.enum'; 
+import { ApiBearerAuth } from '@nestjs/swagger';
 @Controller('invites')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class InvitesController {
@@ -14,31 +14,36 @@ export class InvitesController {
 
   @Post()
   @Roles(UserRole.ADMIN, UserRole.HR)
+  @ApiBearerAuth()
   create(@Body() createInviteDto: CreateInviteDto, @Request() req) {
     return this.invitesService.create(createInviteDto, req.user.id);
   }
-
+  
   @Get()
   @Roles(UserRole.ADMIN, UserRole.HR)
+  @ApiBearerAuth()
   findAll() {
     return this.invitesService.findAll();
   }
 
   @Get(':id')
   @Roles(UserRole.ADMIN, UserRole.HR)
-  findOne(@Param('id') id: string) {
+  @ApiBearerAuth()
+  findOne(@Param('id') id: number) {
     return this.invitesService.findOne(id);
   }
 
   @Patch(':id')
   @Roles(UserRole.ADMIN, UserRole.HR)
-  update(@Param('id') id: string, @Body() updateInviteDto: UpdateInviteDto) {
+  @ApiBearerAuth()
+  update(@Param('id') id: number, @Body() updateInviteDto: UpdateInviteDto) {
     return this.invitesService.update(id, updateInviteDto);
   }
 
   @Delete(':id')
   @Roles(UserRole.ADMIN, UserRole.HR)
-  remove(@Param('id') id: string) {
+  @ApiBearerAuth()
+  remove(@Param('id') id: number) {
     return this.invitesService.remove(id);
   }
 }

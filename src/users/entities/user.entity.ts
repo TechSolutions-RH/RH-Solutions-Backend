@@ -1,15 +1,11 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-
-export enum UserRole {
-  ADMIN = 'admin',        // Administrador
-  HR = 'hr',              // Gente e Cultura
-  COLLABORATOR = 'collaborator', // Colaborador Comum
-}
+import { UserRole } from '../enum/user-role.enum';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn('identity')
+  id: number;
 
   @Column()
   name: string;
@@ -21,7 +17,7 @@ export class User {
   cpf: string;  
 
   @Column({ nullable: true })
-  phone: string; 
+  phone: string;
 
   @Column({ select: false })
   password: string;
@@ -36,21 +32,20 @@ export class User {
   })
   role: UserRole;
 
-  // Campos de endereço
   @Column({ nullable: true })
   cep: string;
 
   @Column({ nullable: true })
-  state: string;  // UF
+  state: string;  
 
   @Column({ nullable: true })
-  city: string;   // Localidade
+  city: string;   
 
   @Column({ nullable: true })
-  neighborhood: string;  // Bairro
+  neighborhood: string;  
 
   @Column({ nullable: true })
-  street: string;  // Logradouro
+  street: string;  
 
   @CreateDateColumn()
   createdAt: Date;

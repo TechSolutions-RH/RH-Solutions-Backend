@@ -17,7 +17,7 @@ export class UsersService {
     return this.usersRepository.find();
   }
 
-  async findOne(id: string) {
+  async findOne(id: number) {
     const user = await this.usersRepository.findOneBy({ id });
     if (!user) {
       throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
@@ -55,7 +55,7 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
+  async update(id: number, updateUserDto: UpdateUserDto) {
     if (updateUserDto.password) {
       updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
     }
@@ -69,7 +69,7 @@ export class UsersService {
     return this.usersRepository.findOneBy({ id });
   }
 
-  async remove(id: string) {
+  async remove(id: number) {
     const user = await this.findOne(id);
     await this.usersRepository.remove(user);
     return { id: user.id, message: 'Usuário removido com sucesso' };
