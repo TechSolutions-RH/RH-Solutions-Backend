@@ -1,6 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { UserRole } from '../enum/user-role.enum';
 import { IsEmail, IsString, IsOptional, Matches, MinLength } from 'class-validator';
+import { IsValidCPF } from '../../validators/cpf.validator';
+import { IsValidPhone } from '../../validators/phone.validator';
+import { IsValidCEP } from '../../validators/cep.validator';
 
 export class CreateUserDto {
   @ApiProperty({
@@ -18,22 +21,18 @@ export class CreateUserDto {
   email: string;
   
   @ApiProperty({
-    example: '123.456.789-01',
-    description: 'CPF do usuário no formato 000.000.000-00',
+    example: '13133573080',
+    description: 'CPF do usuário (apenas números ou com máscara)',
   })
-  @Matches(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, {
-    message: 'CPF deve estar no formato 000.000.000-00',
-  })
+  @IsValidCPF()
   cpf: string;
 
   @ApiProperty({
-    example: '(11) 91234-5678',
-    description: 'Telefone do usuário no formato (00) 00000-0000',
+    example: '11912345678',
+    description: 'Telefone do usuário (apenas números ou com máscara)',
   })
   @IsOptional()
-  @Matches(/^\(\d{2}\) \d{5}-\d{4}$/, {
-    message: 'Telefone deve estar no formato (00) 00000-0000',
-  })
+  @IsValidPhone()
   phone?: string;
 
   @ApiProperty({
@@ -48,7 +47,7 @@ export class CreateUserDto {
   password: string;
 
   @ApiProperty({
-    example: 'COLLABORATOR',
+    example: 'collaborator',
     description: 'Papel do usuário',
     enum: UserRole,
   })
@@ -56,13 +55,11 @@ export class CreateUserDto {
   role?: UserRole;
 
   @ApiProperty({
-    example: '12345-678',
-    description: 'CEP do usuário no formato 00000-000',
+    example: '01310100',
+    description: 'CEP do usuário (apenas números ou com máscara)',
   })
   @IsOptional()
-  @Matches(/^\d{5}-\d{3}$/, {
-    message: 'CEP deve estar no formato 00000-000',
-  })
+  @IsValidCEP()
   cep?: string;
 
   @ApiProperty({

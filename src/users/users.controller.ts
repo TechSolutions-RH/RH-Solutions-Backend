@@ -8,18 +8,16 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { UserRole } from './enum/user-role.enum';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
-@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  @Roles(UserRole.ADMIN, UserRole.HR)
-  @ApiBearerAuth()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get()
   @Roles(UserRole.ADMIN, UserRole.HR)
   @ApiBearerAuth()
@@ -27,6 +25,7 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get(':id')
   @Roles(UserRole.ADMIN, UserRole.HR)
   @ApiBearerAuth()
@@ -34,6 +33,7 @@ export class UsersController {
     return this.usersService.findOne(id);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Patch(':id')
   @Roles(UserRole.ADMIN, UserRole.HR)
   @ApiBearerAuth()
@@ -41,6 +41,7 @@ export class UsersController {
     return this.usersService.update(id, updateUserDto);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete(':id')
   @Roles(UserRole.ADMIN, UserRole.HR)
   @ApiBearerAuth()

@@ -4,6 +4,9 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { cleanCpf } from '../validators/cpf.validator';
+import { cleanPhone } from '../validators/phone.validator';
+import { cleanCep } from '../validators/cep.validator';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -30,12 +33,16 @@ export class UsersService {
   }
 
   async findByCpf(cpf: string) {
-    return this.usersRepository.findOneBy({ cpf });
+    const cleanedCpf = cleanCpf(cpf);
+    return this.usersRepository.findOneBy({ cpf: cleanedCpf });
   }
 
   async create(createUserDto: CreateUserDto) {
+    const cleanedCpf = cleanCpf(createUserDto.cpf);
+    const cleanedPhone = createUserDto.phone ? cleanPhone(createUserDto.phone) : undefined;
+    const cleanedCep = createUserDto.cep ? cleanCep(createUserDto.cep) : undefined;
 
-    const existingUserByCpf = await this.findByCpf(createUserDto.cpf);
+    const existingUserByCpf = await this.findByCpf(cleanedCpf);
     if (existingUserByCpf) {
       throw new ConflictException(`Usuário com CPF ${createUserDto.cpf} já existe`);
     }
@@ -49,6 +56,9 @@ export class UsersService {
     
     const user = this.usersRepository.create({
       ...createUserDto,
+      cpf: cleanedCpf,
+      phone: cleanedPhone,
+      cep: cleanedCep,
       password: hashedPassword,
     });
     
@@ -56,11 +66,25 @@ export class UsersService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    if (updateUserDto.password) {
-      updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
+    const updateData = { ...updateUserDto };
+    
+    if (updateData.cpf) {
+      updateData.cpf = cleanCpf(updateData.cpf);
     }
     
-    const result = await this.usersRepository.update(id, updateUserDto);
+    if (updateData.phone) {
+      updateData.phone = cleanPhone(updateData.phone);
+    }
+    
+    if (updateData.cep) {
+      updateData.cep = cleanCep(updateData.cep);
+    }
+    
+    if (updateData.password) {
+      updateData.password = await bcrypt.hash(updateData.password, 10);
+    }
+    
+    const result = await this.usersRepository.update(id, updateData);
 
     if (result.affected === 0) {
       throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
