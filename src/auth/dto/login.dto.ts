@@ -1,14 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, Matches } from 'class-validator';
+import { IsString } from 'class-validator';
+import { IsValidCPF } from '../../validators/cpf.validator';
 
 export class LoginDto {
   @ApiProperty({
-    example: '123.456.789-01',
-    description: 'CPF do usuário no formato 000.000.000-00',
+    example: '12345678901',
+    description: 'CPF do usuário (apenas números ou com máscara)',
   })
-  @Matches(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, {
-    message: 'CPF deve estar no formato 000.000.000-00',
-  })
+  @IsValidCPF()
   cpf: string;
 
   @ApiProperty({
