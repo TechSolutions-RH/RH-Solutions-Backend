@@ -9,13 +9,11 @@ export function IsValidPhone(validationOptions?: ValidationOptions) {
       options: validationOptions,
       validator: {
         validate(value: any) {
-          if (!value) return true; // Opcional
+          if (!value) return true; 
           if (typeof value !== 'string') return false;
 
-          // Remove máscara
           const cleanPhone = value.replace(/\D/g, '');
           
-          // Deve ter 10 ou 11 dígitos (com ou sem 9 no celular)
           return cleanPhone.length === 10 || cleanPhone.length === 11;
         },
         defaultMessage() {
@@ -27,5 +25,8 @@ export function IsValidPhone(validationOptions?: ValidationOptions) {
 }
 
 export function cleanPhone(phoneWithMask: string): string {
+  if (!phoneWithMask) {
+    return '';
+  }
   return phoneWithMask.replace(/\D/g, '');
 }

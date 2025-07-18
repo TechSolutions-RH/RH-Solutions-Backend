@@ -17,7 +17,7 @@ export class InvitesService {
   ) {}
 
   async create(createInviteDto: CreateInviteDto, userId: number) {
-    // Verificar se já existe convite para este email
+    
     const existingInvite = await this.invitesRepository.findOne({
       where: { email: createInviteDto.email },
     });
@@ -26,7 +26,6 @@ export class InvitesService {
       throw new ConflictException(`Já existe um convite pendente para ${createInviteDto.email}`);
     }
 
-    // Verificar se já existe usuário com este email
     const existingUser = await this.usersService.findByEmail(createInviteDto.email);
     if (existingUser) {
       throw new ConflictException(`Já existe um usuário com o email ${createInviteDto.email}`);
@@ -34,10 +33,8 @@ export class InvitesService {
 
     const inviter = await this.usersService.findOne(userId);
     
-    // Gerar token aleatório
     const token = randomBytes(32).toString('hex');
     
-    // Definir data de expiração (24h)
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 24);
     
