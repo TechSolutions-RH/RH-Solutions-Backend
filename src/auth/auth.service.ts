@@ -50,7 +50,6 @@ export class AuthService {
         id: user.id,
         name: user.name,
         email: user.email,
-        cpf: user.cpf,
         role: user.role,
       },
     };
