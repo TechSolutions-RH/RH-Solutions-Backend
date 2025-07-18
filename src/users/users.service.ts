@@ -44,7 +44,7 @@ export class UsersService {
 
     const existingUserByCpf = await this.findByCpf(cleanedCpf);
     if (existingUserByCpf) {
-      throw new ConflictException(`Usuário com CPF ${createUserDto.cpf} já existe`);
+      throw new ConflictException(`Usuário com CPF ${cleanedCpf} já existe`);
     }
 
     const existingUserByEmail = await this.findByEmail(createUserDto.email);

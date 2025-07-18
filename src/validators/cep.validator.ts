@@ -9,13 +9,11 @@ export function IsValidCEP(validationOptions?: ValidationOptions) {
       options: validationOptions,
       validator: {
         validate(value: any) {
-          if (!value) return true; // Opcional
+          if (!value) return true; 
           if (typeof value !== 'string') return false;
 
-          // Remove máscara
           const cleanCep = value.replace(/\D/g, '');
           
-          // Deve ter exatamente 8 dígitos
           return cleanCep.length === 8;
         },
         defaultMessage() {
@@ -26,6 +24,9 @@ export function IsValidCEP(validationOptions?: ValidationOptions) {
   };
 }
 
-export function cleanCep(cepWithMask: string): string {
+export function cleanCep(cepWithMask: string | null | undefined): string {
+  if (typeof cepWithMask !== 'string') {
+    return '';
+  }
   return cepWithMask.replace(/\D/g, '');
 }
