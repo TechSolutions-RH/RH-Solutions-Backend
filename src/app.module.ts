@@ -18,7 +18,11 @@ import { AuthModule } from './auth/auth.module';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       autoLoadEntities: true,
-      synchronize: true, // Em produção, usar migrations.
+      synchronize: false, 
+      migrations: process.env.NODE_ENV === 'production' 
+        ? ['dist/migrations/*.js'] 
+        : ['src/migrations/*.ts'],
+      migrationsRun: true, 
     }),
     UsersModule,
     InvitesModule,
