@@ -19,7 +19,9 @@ import { AuthModule } from './auth/auth.module';
       database: process.env.DB_NAME,
       autoLoadEntities: true,
       synchronize: false, 
-      migrations: ['dist/migrations/*{.ts,.js}'],
+      migrations: process.env.NODE_ENV === 'production' 
+        ? ['dist/migrations/*.js'] 
+        : ['src/migrations/*.ts'],
       migrationsRun: true, 
     }),
     UsersModule,
