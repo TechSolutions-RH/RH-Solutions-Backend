@@ -9,11 +9,11 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 export default new DataSource({
   type: 'postgres',
-  host: configService.get('DB_HOST') || process.env.DB_HOST || 'localhost',
-  port: parseInt(configService.get('DB_PORT') || process.env.DB_PORT || '5432'),
-  username: configService.get('DB_USERNAME') || process.env.DB_USERNAME || 'postgres',
-  password: configService.get('DB_PASSWORD') || process.env.DB_PASSWORD || 'postgres',
-  database: configService.get('DB_NAME') || process.env.DB_NAME || 'rh_solutions',
+  host: configService.get('DB_HOST', 'localhost'),
+  port: parseInt(configService.get('DB_PORT', '5432')),
+  username: configService.get('DB_USERNAME', 'postgres'),
+  password: configService.get('DB_PASSWORD', 'postgres'),
+  database: configService.get('DB_NAME', 'rh_solutions'),
   
   // Otimização para produção vs desenvolvimento
   entities: isProduction 
