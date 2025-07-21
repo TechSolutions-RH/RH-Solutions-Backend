@@ -1,0 +1,20 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Instala CLI do NestJS globalmente
+RUN npm install -g @nestjs/cli
+
+# Copia package.json
+COPY package*.json ./
+
+# Instala todas as dependências (incluindo dev)
+RUN npm install
+
+# Copia todo o código
+COPY . .
+
+EXPOSE 3000
+
+# Inicia em modo desenvolvimento com hot reload
+CMD ["npm", "run", "start:dev"]
