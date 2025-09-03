@@ -7,6 +7,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { cleanCpf } from '../validators/cpf.validator';
 import { cleanPhone } from '../validators/phone.validator';
 import { cleanCep } from '../validators/cep.validator';
+import { PaginationDto, PaginatedResult } from './dto/pagination.dto';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -16,8 +17,40 @@ export class UsersService {
     private usersRepository: Repository<User>,
   ) {}
 
-  async findAll() {
-    return this.usersRepository.find();
+  async findAll(paginationDto: PaginationDto): Promise<PaginatedResult<User>> {
+    const { page = 1, limit = 10 } = paginationDto;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await this.usersRepository.findAndCount({
+      take: limit,
+      skip: skip,
+      order: { createdAt: 'DESC' }, // Ordenar por mais recentes
+      select: { // Não retornar senha
+        id: true,
+        name: true,
+        email: true,
+        cpf: true,
+        phone: true,
+        city: true,
+        state: true,
+        cep: true,
+        role: true,
+        isActive: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+     const totalPages = Math.ceil(total / limit);
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPreviousPage: page > 1,
+    };
   }
 
   async findOne(id: number) {

@@ -9,7 +9,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 export default new DataSource({
   type: 'postgres',
-  host: configService.get('DB_HOST', 'localhost'),
+  host: configService.get('DB_HOST', 'postgres'),
   port: parseInt(configService.get('DB_PORT', '5432')),
   username: configService.get('DB_USERNAME', 'postgres'),
   password: configService.get('DB_PASSWORD', 'postgres'),
@@ -18,11 +18,11 @@ export default new DataSource({
   // Otimização para produção vs desenvolvimento
   entities: isProduction 
     ? ['dist/**/*.entity.js']
-    : ['src/**/*.entity.ts', 'dist/**/*.entity.js'],
+    : ['src/**/*.entity.ts'],
     
   migrations: isProduction
     ? ['dist/migrations/*.js']
-    : ['src/migrations/*.ts', 'dist/migrations/*.js'],
+    : ['src/migrations/*.ts'],
     
   // Configurações específicas do ambiente
   synchronize: !isProduction, // Apenas em desenvolvimento
